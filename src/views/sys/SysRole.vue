@@ -10,7 +10,7 @@
         <template slot="prepend">ROLE_</template>
       </el-input>
       <el-input size="small" placeholder="请输入角色中文名" v-model="role.namezh"
-                @keydown.enter.native="addRole"></el-input>
+                @keydown.enter.native="addRole" />
       <el-button type="primary" size="small" icon="el-icon-plus" @click="addRole">添加角色</el-button>
     </div>
     <div class="RoleMain">
@@ -26,7 +26,7 @@
             <div slot="header" class="clearfix">
               <span>可访问的资源</span>
               <el-button style="float: right; padding: 3px 0;color: #ff0000;" icon="el-icon-delete"
-                         type="text" @click="deleteRole(r)"></el-button>
+                         type="text" @click="deleteRole(r)" />
             </div>
             <div>
               <el-tree
@@ -35,10 +35,10 @@
                 ref="tree"
                 :key="index"
                 :default-checked-keys="selectedMenus"
-                :data="allMenus" :props="defaultProps"></el-tree>
+                :data="allMenus" :props="defaultProps" />
               <div style="display: flex;justify-content: flex-end">
                 <el-button @click="cancelUpdate">取消修改</el-button>
-                <el-button type="primary" @click="doUpdate(r.id,index)">确认修改</el-button>
+                <el-button type="primary" @click="update(r.id,index)">确认修改</el-button>
               </div>
             </div>
           </el-card>
@@ -49,8 +49,14 @@
 </template>
 
 <script>
+
+import { initMenu } from '../../utils/menu'
+import router from '../../router'
+import store from '../../store'
+
 export default {
-  name: 'Role',
+  name: 'SysRole',
+  inject: ['reload'],
   data () {
     return {
       role: {
@@ -92,8 +98,10 @@ export default {
       })
     },
     addRole () {
-      if (this.role.name && this.role.nameZh) {
-        this.globalLoading = true
+      if (this.role.name && this.role.namezh) {
+        // this.globalLoading = true
+        console.log(this.role)
+        /*
         this.postRequest('/role/add', this.role).then(resp => {
           this.globalLoading = false
           if (resp) {
@@ -102,12 +110,34 @@ export default {
             this.initRoles()
           }
         })
+        */
       } else {
         this.$message.error('数据不可以为空')
       }
     },
     cancelUpdate () {
       this.activeName = -1
+    },
+    update (rid, index) {
+      const tree = this.$refs.tree[index]
+      const selectedKeys = tree.getCheckedKeys(true)
+      console.log(selectedKeys)
+      selectedKeys.forEach(key => {
+        console.log(key)
+      })
+      let url = '/role/menu?roleId=' + rid
+      selectedKeys.forEach(key => {
+        url += '&menuList=' + key
+      })
+      this.putRequest(url).then(resp => {
+        if (resp) {
+          this.activeName = -1
+          debugger
+          initMenu(router, store)
+          this.reload()
+          // location.reload()
+        }
+      })
     },
     /*
     doUpdate (rid, index) {

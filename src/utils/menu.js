@@ -24,7 +24,7 @@ export const formatRoutes = (routes) => {
       component,
       name,
       meta,
-      iconCls,
+      // iconCls,
       children
     } = router
     if (children && children instanceof Array) {
@@ -33,14 +33,14 @@ export const formatRoutes = (routes) => {
     const fmRouter = {
       path: path,
       name: name,
-      iconCls: iconCls,
+      // iconCls: iconCls,
       meta: meta,
       children: children,
       component (resolve) {
         if (component.startsWith('Home')) {
           require(['../views/' + component + '.vue'], resolve)
         } else if (component.startsWith('Sys')) {
-          require(['../views/system/' + component + '.vue'], resolve)
+          require(['../views/sys/' + component + '.vue'], resolve)
         }
       }
     }

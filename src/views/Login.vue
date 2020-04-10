@@ -51,7 +51,7 @@ export default {
             this.loading = false
             console.log('login data')
             console.log(resp)
-            debugger
+            // debugger
             if (resp) {
               this.$store.commit('INIT_CURRENTUSER', resp.obj)
               window.sessionStorage.setItem('user', JSON.stringify(resp.obj))

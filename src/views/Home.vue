@@ -18,7 +18,7 @@
       </el-header>
       <el-container>
         <el-aside width="200px">
-          <el-menu router unique-opened>
+          <el-menu router unique-opened :default-active="this.$route.path">
 <!--            <el-submenu :index="index+''" v-for="(item,index) in routes" v-if="!item.hidden" :key="index">-->
             <el-submenu :index="index+''" v-for="(item,index) in routes" :key="index">
               <template slot="title">
