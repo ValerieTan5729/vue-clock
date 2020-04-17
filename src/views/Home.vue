@@ -2,7 +2,7 @@
   <div>
     <el-container>
       <el-header class="homeHeader">
-        <div class="title">总值打卡后台管理</div>
+        <div class="title">后台管理</div>
         <div>
           <el-dropdown class="userInfo" @command="commandHandler">
             <span class="el-dropdown-link" style="color: white">

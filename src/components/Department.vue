@@ -25,7 +25,7 @@
             添加
           </el-button>
           <el-button
-            type="primary"
+            type="success"
             class="depBtn"
             @click="() => showUpdateDepView(data)">
             修改
@@ -226,6 +226,7 @@ export default {
           type: 'warning'
         }).then(() => {
           this.deleteRequest('/basic/dep/' + data.id).then(resp => {
+            console.log(resp)
             if (resp) {
               this.removeDepFromDeps(null, this.deps, data.id)
             }
