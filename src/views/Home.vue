@@ -69,7 +69,7 @@ export default {
         }).then(() => {
           this.getRequest('/logout')
           window.sessionStorage.removeItem('user')
-          this.$store.commit('initRoutes', [])
+          this.$store.commit('INIT_ROUTES', [])
           this.$router.replace('/')
         }).catch(() => {
           this.$message({

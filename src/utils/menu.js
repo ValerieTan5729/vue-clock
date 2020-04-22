@@ -10,7 +10,8 @@ export const initMenu = (router, store) => {
     if (data) {
       const fmtRoutes = formatRoutes(data.obj)
       console.log(fmtRoutes)
-      router.addRoutes(fmtRoutes)
+      router.selfAddRoutes(fmtRoutes)
+      // router.addRoutes(fmtRoutes)
       store.commit('INIT_ROUTES', fmtRoutes)
       // store.dispatch('connect')
     }
@@ -41,6 +42,8 @@ export const formatRoutes = (routes) => {
           require(['../views/' + component + '.vue'], resolve)
         } else if (component.startsWith('Sys')) {
           require(['../views/sys/' + component + '.vue'], resolve)
+        } else if (component.startsWith('User')) {
+          require(['../views/user/' + component + '.vue'], resolve)
         }
       }
     }
