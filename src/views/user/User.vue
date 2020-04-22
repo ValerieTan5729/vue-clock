@@ -1,6 +1,6 @@
 <template>
   <div>
-    用户管理
+    用户管理(主要用来管理前端微信打卡类型)
   </div>
 </template>
 
