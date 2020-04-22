@@ -6,7 +6,7 @@
     element-loading-background="rgba(0, 0, 0, 0.8)"
   >
     <div class="RoleTool">
-      <el-input size="small" placeholder="请输入角色英文名" v-model="role.name">
+      <el-input size="small" type="text" placeholder="请输入角色英文名" v-model="role.name">
         <template slot="prepend">ROLE_</template>
       </el-input>
       <el-input size="small" placeholder="请输入角色中文名" v-model="role.namezh"
@@ -26,16 +26,18 @@
             <div slot="header" class="clearfix">
               <span>可访问的资源</span>
               <el-button style="float: right; padding: 3px 0;color: #ff0000;" icon="el-icon-delete"
-                         type="text" @click="deleteRole(r)" />
+                         type="text" @click="deleteRole(r)">删除角色</el-button>
             </div>
             <div>
               <el-tree
                 show-checkbox
                 node-key="id"
                 ref="tree"
+                default-expand-all
                 :key="index"
                 :default-checked-keys="selectedMenus"
-                :data="allMenus" :props="defaultProps" />
+                :data="allMenus"
+                :props="defaultProps" />
               <div style="display: flex;justify-content: flex-end">
                 <el-button @click="cancelUpdate">取消修改</el-button>
                 <el-button type="primary" @click="update(r.id,index)">确认修改</el-button>
@@ -49,11 +51,6 @@
 </template>
 
 <script>
-
-import { initMenu } from '../../utils/menu'
-import router from '../../router'
-import store from '../../store'
-
 export default {
   name: 'SysRole',
   inject: ['reload'],
@@ -80,7 +77,7 @@ export default {
   },
   methods: {
     deleteRole (role) {
-      this.$confirm('此操作将永久删除【' + role.nameZh + '】角色, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除【' + role.namezh + '】角色(可能会导致部分用户无法正常使用系统), 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -90,18 +87,11 @@ export default {
             this.initRoles()
           }
         })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
       })
     },
     addRole () {
       if (this.role.name && this.role.namezh) {
-        // this.globalLoading = true
-        console.log(this.role)
-        /*
+        this.globalLoading = true
         this.postRequest('/role/add', this.role).then(resp => {
           this.globalLoading = false
           if (resp) {
@@ -110,7 +100,6 @@ export default {
             this.initRoles()
           }
         })
-        */
       } else {
         this.$message.error('数据不可以为空')
       }
@@ -132,32 +121,12 @@ export default {
       this.putRequest(url).then(resp => {
         if (resp) {
           this.activeName = -1
-          debugger
-          initMenu(router, store)
-          this.reload()
-          // location.reload()
         }
       })
     },
-    /*
-    doUpdate (rid, index) {
-      let tree = this.$refs.tree[index]
-      let selectedKeys = tree.getCheckedKeys(true)
-      let url = '/sys/basic/permiss/?rid=' + rid
-      selectedKeys.forEach(key => {
-        url += '&mids=' + key
-      })
-      this.putRequest(url).then(resp => {
-        if (resp) {
-          this.activeName = -1
-        }
-      })
-    },
-    */
     change (rid) {
       if (rid) {
         this.initAllMenus(rid)
-        // this.initSelectedMenus(rid)
       }
     },
     initSelectedMenus (rid) {
