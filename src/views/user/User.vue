@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- 查询表格 -->
     <div>
       <el-divider content-position="left" style="font-size: 20px">查询条件</el-divider>
       <el-form :model="searchValue" ref="searchForm" label-position="right" label-width="90px" style="width: 90%; text-align: center">
@@ -45,6 +46,7 @@
         </el-form-item>
       </el-form>
     </div>
+    <!-- 用户信息表格 -->
     <div>
       <!-- 用户信息表格 -->
       <el-table
@@ -109,16 +111,25 @@
             width="150">
             <template slot-scope="scope">
               <el-button
+                class="innerBtn"
                 size="mini"
                 type="primary"
+                icon="el-icon-edit"
                 @click="() => handleEdit(scope.$index, scope.row)">
-                修改
               </el-button>
               <el-button
+                class="innerBtn"
+                size="mini"
+                type="primary"
+                icon="el-icon-user"
+                @click="() => handleRole(scope.$index, scope.row)">
+              </el-button>
+              <el-button
+                class="innerBtn"
                 size="mini"
                 type="danger"
+                icon="el-icon-delete"
                 @click="() => handleDelete(scope.$index, scope.row)">
-                删除
               </el-button>
             </template>
           </el-table-column>
@@ -136,6 +147,7 @@
         </el-pagination>
       </div>
     </div>
+    <!-- 用户信息弹窗 -->
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -206,6 +218,60 @@
         <el-button type="primary" @click="send">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 用户权限弹窗 -->
+    <el-dialog
+      title="用户角色详情"
+      :visible.sync="roleVisible"
+      :before-close="cancel"
+      width="40%">
+      <div>
+        <el-form :model="roleDetail" label-position="right" label-width="80px">
+          <el-form-item label="用户名" prop="name">
+<!--            <el-input v-model="roleDetail.name"/>-->
+            <el-tag>{{roleDetail.name}}</el-tag>
+          </el-form-item>
+          <el-form-item label="角色" prop="role">
+            <el-select v-model="roleDetail.role" multiple placeholder="请选择">
+              <el-option
+                v-for="item in roles"
+                :key="item.id"
+                :label="item.namezh"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <!--
+        <table>
+          <tr>
+            <td>
+              <el-tag>用户名</el-tag>
+            </td>
+            <td>{{roleDetail.name}}</td>
+          </tr>
+          <tr>
+            <td>
+              <el-tag>角色</el-tag>
+            </td>
+            <td>
+              <el-select v-model="roleDetail.role" multiple placeholder="请选择">
+                <el-option
+                  v-for="item in roles"
+                  :key="item.id"
+                  :label="item.namezh"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </td>
+          </tr>
+        </table>
+        -->
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancel">取消</el-button>
+        <el-button type="primary" @click="saveRoles">确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -222,8 +288,10 @@ export default {
       loading: false,
       title: '',
       dialogVisible: false,
+      roleVisible: false,
       depList: [],
       dutyLevelList: [],
+      roles: [],
       userDetail: {
         id: null,
         name: '',
@@ -240,6 +308,11 @@ export default {
         phone: null,
         depId: null,
         levelId: null
+      },
+      roleDetail: {
+        id: null,
+        name: null,
+        role: null
       },
       rules: {
         name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -260,24 +333,34 @@ export default {
   mounted () {
     this.initDepartment()
     this.initDutyLevel()
+    this.initRole()
     this.initUser()
   },
   methods: {
     initDepartment () {
-      console.log('获取部门')
       this.getRequest('/basic/dep/').then(resp => {
         if (resp) {
           this.depList = this.getTreeData(resp.obj)
+          console.log('部门列表')
           console.log(this.depList)
         }
       })
     },
     initDutyLevel () {
-      console.log('获取值班级别')
       this.getRequest('/basic/dic/duty').then(resp => {
         if (resp) {
           this.dutyLevelList = this.getTreeData(resp.obj)
+          console.log('值班级别列表')
           console.log(this.dutyLevelList)
+        }
+      })
+    },
+    initRole () {
+      this.getRequest('/role/').then(resp => {
+        if (resp) {
+          this.roles = resp.obj.data
+          console.log('角色列表')
+          console.log(this.roles)
         }
       })
     },
@@ -303,6 +386,8 @@ export default {
           this.user = resp.obj.data
           this.total = resp.obj.total
           this.loading = false
+          console.log('用户列表')
+          console.log(this.user)
         }
       })
     },
@@ -373,6 +458,18 @@ export default {
       console.log(this.userDetail)
       this.dialogVisible = true
     },
+    handleRole (index, row) {
+      console.log('为用户分配角色')
+      this.getRequest('/role/user/' + row.id).then(resp => {
+        if (resp) {
+          console.log('role', resp.obj)
+          this.roleDetail.id = row.id
+          this.roleDetail.name = row.name
+          this.roleDetail.role = resp.obj
+          this.roleVisible = true
+        }
+      })
+    },
     handleDelete (index, row) {
       console.log('handle delete')
       console.log(index, row)
@@ -414,8 +511,11 @@ export default {
     },
     cancel () {
       this.initUserDetail()
-      this.$refs.userForm.resetFields()
+      if (this.dialogVisible) {
+        this.$refs.userForm.resetFields()
+      }
       this.dialogVisible = false
+      this.roleVisible = false
     },
     /*
     handleNodeClick (node) {
@@ -447,7 +547,7 @@ export default {
       this.userDetail.dutyLevelId = this.userDetail.dutyLevelPath[this.userDetail.dutyLevelPath.length - 1]
     },
     send () {
-      console.log('向后台发送数据')
+      // console.log('向后台发送数据')
       console.log(this.userDetail)
       this.$refs.userForm.validate((valid) => {
         if (valid) {
@@ -475,6 +575,19 @@ export default {
           return false
         }
       })
+    },
+    saveRoles () {
+      console.log(this.roleDetail)
+      if (this.roleDetail.role.length > 0) {
+        const url = '/user/role?userId=' + this.roleDetail.id + '&roleList=' + this.roleDetail.role.toString()
+        this.putRequest(url).then(resp => {
+          if (resp) {
+            this.roleVisible = false
+          }
+        })
+      } else {
+        this.$message.error('请选择相应的角色')
+      }
     },
     getTreeData (list) {
       // 获取符合cascader的value
@@ -516,5 +629,8 @@ export default {
   }
   .el-input__inner {
     width: 200px;
+  }
+  .innerBtn {
+    padding: 7px;
   }
 </style>
