@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-table
-      :data="searchVisible ? select : dictionary"
+      :data="dictionary"
       style="width: 95%"
       ref="table"
       row-key="id"
@@ -25,7 +25,7 @@
             <el-button
               size="mini"
               type="primary"
-              @click="handleAdd()">
+              @click="() => handleAdd()">
               新增
             </el-button>
           </template>
@@ -33,18 +33,18 @@
             <el-button
               size="mini"
               type="primary"
-              @click="handleAdd(scope.$index, scope.row)">
+              @click="() => handleAdd(scope.$index, scope.row)">
               新增
             </el-button>
             <el-button
               size="mini"
-              @click="handleEdit(scope.$index, scope.row)">
+              @click="() => handleEdit(scope.$index, scope.row)">
               修改
             </el-button>
             <el-button
               size="mini"
               type="danger"
-              @click="handleDelete(scope.$index, scope.row)">
+              @click="() => handleDelete(scope.$index, scope.row)">
               删除
             </el-button>
           </template>
@@ -100,10 +100,7 @@ export default {
       dialogVisible: false,
       addVisible: false,
       updateVisible: false,
-      showClose: false,
-      select: [],
-      searchName: '',
-      searchVisible: false
+      showClose: false
     }
   },
   mounted () {
