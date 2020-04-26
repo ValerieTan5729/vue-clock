@@ -6,11 +6,11 @@
     element-loading-background="rgba(0, 0, 0, 0.8)"
   >
     <div class="RoleTool">
-      <el-input size="small" placeholder="请输入角色英文名" v-model="role.name">
+      <el-input size="small" type="text" placeholder="请输入角色英文名" v-model="role.name">
         <template slot="prepend">ROLE_</template>
       </el-input>
       <el-input size="small" placeholder="请输入角色中文名" v-model="role.namezh"
-                @keydown.enter.native="addRole"></el-input>
+                @keydown.enter.native="addRole" />
       <el-button type="primary" size="small" icon="el-icon-plus" @click="addRole">添加角色</el-button>
     </div>
     <div class="RoleMain">
@@ -26,19 +26,21 @@
             <div slot="header" class="clearfix">
               <span>可访问的资源</span>
               <el-button style="float: right; padding: 3px 0;color: #ff0000;" icon="el-icon-delete"
-                         type="text" @click="deleteRole(r)"></el-button>
+                         type="text" @click="deleteRole(r)">删除角色</el-button>
             </div>
             <div>
               <el-tree
                 show-checkbox
                 node-key="id"
                 ref="tree"
+                default-expand-all
                 :key="index"
                 :default-checked-keys="selectedMenus"
-                :data="allMenus" :props="defaultProps"></el-tree>
+                :data="allMenus"
+                :props="defaultProps" />
               <div style="display: flex;justify-content: flex-end">
                 <el-button @click="cancelUpdate">取消修改</el-button>
-                <el-button type="primary" @click="doUpdate(r.id,index)">确认修改</el-button>
+                <el-button type="primary" @click="update(r.id,index)">确认修改</el-button>
               </div>
             </div>
           </el-card>
@@ -74,27 +76,22 @@ export default {
   },
   methods: {
     deleteRole (role) {
-      this.$confirm('此操作将永久删除【' + role.nameZh + '】角色, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除【' + role.namezh + '】角色(可能会导致部分用户无法正常使用系统), 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.deleteRequest('/role/' + role.id).then(resp => {
+        this.deleteRequest('/adv/role/' + role.id).then(resp => {
           if (resp) {
             this.initRoles()
           }
         })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
       })
     },
     addRole () {
-      if (this.role.name && this.role.nameZh) {
+      if (this.role.name && this.role.namezh) {
         this.globalLoading = true
-        this.postRequest('/role/add', this.role).then(resp => {
+        this.postRequest('/adv/role/add', this.role).then(resp => {
           this.globalLoading = false
           if (resp) {
             this.role.name = ''
@@ -109,13 +106,16 @@ export default {
     cancelUpdate () {
       this.activeName = -1
     },
-    /*
-    doUpdate (rid, index) {
-      let tree = this.$refs.tree[index]
-      let selectedKeys = tree.getCheckedKeys(true)
-      let url = '/sys/basic/permiss/?rid=' + rid
+    update (rid, index) {
+      const tree = this.$refs.tree[index]
+      const selectedKeys = tree.getCheckedKeys(true)
+      console.log(selectedKeys)
       selectedKeys.forEach(key => {
-        url += '&mids=' + key
+        console.log(key)
+      })
+      let url = '/adv/role/menu?roleId=' + rid
+      selectedKeys.forEach(key => {
+        url += '&menuList=' + key
       })
       this.putRequest(url).then(resp => {
         if (resp) {
@@ -123,11 +123,9 @@ export default {
         }
       })
     },
-    */
     change (rid) {
       if (rid) {
         this.initAllMenus(rid)
-        // this.initSelectedMenus(rid)
       }
     },
     initSelectedMenus (rid) {
@@ -151,7 +149,7 @@ export default {
     },
     initRoles () {
       this.loading = true
-      this.getRequest('/role/').then(resp => {
+      this.getRequest('/adv/role/').then(resp => {
         this.loading = false
         if (resp) {
           this.roles = resp.obj.data

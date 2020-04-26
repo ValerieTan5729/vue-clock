@@ -9,26 +9,23 @@
       lazy
       :load="load"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
-      <el-table-column
-        prop="name"
-        label="名称">
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        align="center">
+      <el-table-column>
+        <template slot="header">
+          <el-button
+            size="mini"
+            type="primary"
+            @click="() => handleAdd()">
+            新增
+          </el-button>
+        </template>
         <el-table-column
-          prop="operate"
+          prop="name"
+          label="名称">
+        </el-table-column>
+        <el-table-column
+          label="操作"
           align="center"
-          width="250"
-          fixed="right">
-          <template slot="header">
-            <el-button
-              size="mini"
-              type="primary"
-              @click="() => handleAdd()">
-              新增
-            </el-button>
-          </template>
+          width="250">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -53,7 +50,6 @@
     </el-table>
     <el-dialog :title="type"
                :visible.sync="dialogVisible"
-               :show-close="showClose"
                :before-close="cancel"
                width="30%">
       <div>
