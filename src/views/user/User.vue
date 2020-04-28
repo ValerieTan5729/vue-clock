@@ -364,7 +364,7 @@ export default {
       })
     },
     initUser () {
-      var url = '/user/?page=' + this.page + '&limit=' + this.limit
+      let url = '/user/?page=' + this.page + '&limit=' + this.limit
       if (this.searchValue.search) {
         if (this.searchValue.name) {
           url += '&name=' + this.searchValue.name
@@ -504,7 +504,7 @@ export default {
             })
           })
         } else {
-          this.$message.error('至少选择一项数据')
+          this.$message.error('至少选择一项数据进行删除操作')
         }
       }
     },

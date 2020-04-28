@@ -44,6 +44,8 @@ export const formatRoutes = (routes) => {
           require(['../views/sys/' + component + '.vue'], resolve)
         } else if (component.startsWith('User')) {
           require(['../views/user/' + component + '.vue'], resolve)
+        } else if (component.startsWith('Duty')) {
+          require(['../views/duty/' + component + '.vue'], resolve)
         }
       }
     }
