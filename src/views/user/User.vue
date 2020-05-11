@@ -3,21 +3,17 @@
     <!-- 查询表格 -->
     <div>
       <el-divider content-position="left" style="font-size: 20px">查询条件</el-divider>
-      <el-form :model="searchValue" ref="searchForm" label-position="right" label-width="90px" style="width: 90%; text-align: center">
-        <el-row :gutter="10">
-          <el-col :span="6">
+      <el-form :model="searchValue" ref="searchForm" label-position="right" label-width="90px" style="width: 90%;" :inline="true">
+        <el-row>
             <el-form-item label="用户名称" prop="name">
-              <el-input v-model="searchValue.name" />
+              <el-input v-model="searchValue.name" class="formInput"/>
             </el-form-item>
-          </el-col>
-          <el-col :span="6">
             <el-form-item label="手机号码" prop="phone">
-              <el-input v-model="searchValue.phone" />
+              <el-input v-model="searchValue.phone" class="formInput"/>
             </el-form-item>
-          </el-col>
-          <el-col :span="6">
             <el-form-item label="所在部门" prop="depId">
               <el-cascader
+                class="formInput"
                 placeholder="请选择所在部门"
                 v-model="searchValue.depId"
                 :options="depList"
@@ -26,11 +22,10 @@
                 filterable>
               </el-cascader>
             </el-form-item>
-          </el-col>
-          <el-col :span="6">
             <el-form-item label="值班级别" prop="levelId">
               <el-cascader
                 placeholder="请选择值班级别"
+                class="formInput"
                 v-model="searchValue.levelId"
                 :options="dutyLevelList"
                 :show-all-levels="false"
@@ -38,12 +33,13 @@
                 filterable>
               </el-cascader>
             </el-form-item>
-          </el-col>
         </el-row>
-        <el-form-item>
-          <el-button type="primary" @click="search">查询</el-button>
-          <el-button @click="reset">重置</el-button>
-        </el-form-item>
+        <el-row style="text-align: center">
+          <el-form-item>
+            <el-button type="primary" @click="search">查询</el-button>
+            <el-button @click="reset">重置</el-button>
+          </el-form-item>
+        </el-row>
       </el-form>
     </div>
     <!-- 用户信息表格 -->
@@ -623,13 +619,10 @@ export default {
 </script>
 
 <style scoped>
-  .el-divider__text {
-    font-size: 20px;
-  }
-  .el-input__inner {
-    width: 200px;
-  }
   .innerBtn {
     padding: 7px;
+  }
+  .formInput {
+    width: 200px;
   }
 </style>

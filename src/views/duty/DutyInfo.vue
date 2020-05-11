@@ -2,15 +2,12 @@
   <div>
     <!-- 查询表格 -->
     <div>
-      <el-divider content-position="left" style="font-size: 20px">查询条件</el-divider>
-      <el-form :model="searchValue" ref="searchForm" label-position="right" label-width="90px" style="width: 90%; text-align: center">
-        <el-row type="flex" justify="center">
-          <el-col :span="8">
-            <el-form-item label="名称" prop="name">
+      <el-divider content-position="left" style="font-size: 20px; min-width: 900px">查询条件</el-divider>
+      <el-form :model="searchValue" ref="searchForm" label-position="right" label-width="80px" style="width: 90%" :inline="true">
+        <el-row>
+            <el-form-item label="总值名称" prop="name">
               <el-input v-model="searchValue.name" />
             </el-form-item>
-          </el-col>
-          <el-col :span="8">
             <el-form-item label="开始时间" prop="beginDate">
               <el-date-picker
                 v-model="searchValue.beginDate"
@@ -19,8 +16,6 @@
                 placeholder="选择开始日期">
               </el-date-picker>
             </el-form-item>
-          </el-col>
-          <el-col :span="8">
             <el-form-item label="结束时间" prop="endDate">
               <el-date-picker
                 v-model="searchValue.endDate"
@@ -29,12 +24,13 @@
                 placeholder="选择结束日期">
               </el-date-picker>
             </el-form-item>
-          </el-col>
         </el-row>
-        <el-form-item>
-          <el-button type="primary" @click="search">查询</el-button>
-          <el-button @click="reset">重置</el-button>
-        </el-form-item>
+        <el-row style="text-align: center">
+          <el-form-item>
+            <el-button type="primary" @click="search">查询</el-button>
+            <el-button @click="reset">重置</el-button>
+          </el-form-item>
+        </el-row>
       </el-form>
     </div>
     <!-- 值班表信息 -->
@@ -176,7 +172,7 @@
 
 <script>
 export default {
-  name: 'Duty',
+  name: 'DutyInfo',
   data () {
     return {
       duty: [],
@@ -377,5 +373,12 @@ export default {
   }
   .el-input {
     width: 200px;
+  }
+  .el-form-item {
+    min-width: 290px;
+    max-width: 300px;
+  }
+  .el-row {
+    min-width: 900px;
   }
 </style>

@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from './views/Index.vue'
+import Home from './views/Home.vue'
 import Login from './views/Login'
+import Index from './views/Index'
 
 Vue.use(VueRouter)
 
@@ -14,10 +15,22 @@ const routes = [
   },
   {
     path: '/index',
+    name: 'index',
+    component: Index,
+    hidden: true
+  },
+  {
+    path: '/home',
     name: 'home',
     component: Home,
     hidden: true
+  }/*,
+  {
+    // 若输入不存在的路径, 自动跳转到首页
+    path: '*',
+    redirect: '/home'
   }
+  */
 ]
 
 const router = new VueRouter({
