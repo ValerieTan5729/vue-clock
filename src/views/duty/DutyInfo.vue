@@ -5,19 +5,21 @@
       <el-divider content-position="left" style="font-size: 20px; min-width: 900px">查询条件</el-divider>
       <el-form :model="searchValue" ref="searchForm" label-position="right" label-width="80px" style="width: 90%" :inline="true">
         <el-row>
-            <el-form-item label="总值名称" prop="name">
-              <el-input v-model="searchValue.name" />
+            <el-form-item class="search-item" label="总值名称" prop="name">
+              <el-input class="search-input" v-model="searchValue.name" />
             </el-form-item>
-            <el-form-item label="开始时间" prop="beginDate">
+            <el-form-item class="search-item" label="开始时间" prop="beginDate">
               <el-date-picker
+                class="search-picker"
                 v-model="searchValue.beginDate"
                 type="date"
                 value-format="yyyy-MM-dd"
                 placeholder="选择开始日期">
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="结束时间" prop="endDate">
+            <el-form-item class="search-item" label="结束时间" prop="endDate">
               <el-date-picker
+                class="search-picker"
                 v-model="searchValue.endDate"
                 type="date"
                 value-format="yyyy-MM-dd"
@@ -101,7 +103,7 @@
             align="center"
             fixed="right"
             label="操作"
-            width="100">
+            width="150">
             <template slot-scope="scope">
               <el-button
                 class="innerBtn"
@@ -111,10 +113,27 @@
                 @click="() => handleEdit(scope.$index, scope.row)">
               </el-button>
               <el-button
+                v-if="scope.row.active === 1"
+                class="innerBtn"
+                size="mini"
+                type="danger"
+                icon="el-icon-unlock"
+                @click="() => handleInactive(scope.$index, scope.row)">
+              </el-button>
+              <el-button
+                v-if="scope.row.active === 0"
+                class="innerBtn"
+                size="mini"
+                type="success"
+                icon="el-icon-lock"
+                @click="() => handleActive(scope.$index, scope.row)">
+              </el-button>
+              <el-button
                 class="innerBtn"
                 size="mini"
                 type="danger"
                 icon="el-icon-delete"
+                :disabled="scope.row.active === 1"
                 @click="() => handleDelete(scope.$index, scope.row)">
               </el-button>
             </template>
@@ -145,6 +164,7 @@
           </el-form-item>
           <el-form-item label="开始时间" prop="beginDate">
             <el-date-picker
+              class="form-picker"
               v-model="dutyDetail.beginDate"
               type="datetime"
               value-format="yyyy-MM-dd HH:mm:ss"
@@ -152,6 +172,7 @@
           </el-form-item>
           <el-form-item label="结束时间" prop="endDate">
             <el-date-picker
+              class="form-picker"
               v-model="dutyDetail.endDate"
               type="datetime"
               value-format="yyyy-MM-dd HH:mm:ss"
@@ -184,6 +205,7 @@ export default {
         endDate: null,
         remark: null
       },
+      current: null,
       total: 0,
       page: 1,
       limit: 10,
@@ -240,6 +262,11 @@ export default {
           this.duty = resp.obj.data
           this.total = resp.obj.total
           this.loading = false
+        }
+      })
+      this.getRequest('/duty/current').then(resp => {
+        if (resp) {
+          this.current = resp.obj
         }
       })
     },
@@ -336,6 +363,37 @@ export default {
         }
       }
     },
+    handleActive (index, row) {
+      console.log('设置值班表为当前值班表')
+      if (this.current) {
+        // 当前存在当值值班表
+        this.$confirm('当值值班表【' + this.current.name + '】仍在工作, 无法设置该值班表为当值值班表', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+      } else {
+        this.putRequest('/duty/' + row.id + '/active').then(resp => {
+          if (resp) {
+            this.initDuty()
+          }
+        })
+      }
+    },
+    handleInactive (index, row) {
+      console.log('取消当前值班表为当前值班表')
+      this.$confirm('此操作将导致用户无法对值班表【' + row.name + '】进行打卡, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.putRequest('/duty/' + row.id + '/inactive').then(resp => {
+          if (resp) {
+            this.initDuty()
+          }
+        })
+      })
+    },
     send () {
       console.log(this.dutyDetail)
       if (this.dutyDetail.id) {
@@ -371,14 +429,14 @@ export default {
   .innerBtn {
     padding: 7px;
   }
-  .el-input {
-    width: 200px;
+  .search-input {
+    width: 220px;
   }
-  .el-form-item {
+  .search-item {
     min-width: 290px;
     max-width: 300px;
   }
-  .el-row {
-    min-width: 900px;
+  .form-picker {
+    width: 100%;
   }
 </style>
