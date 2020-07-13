@@ -11,8 +11,8 @@
             <el-dropdown-menu slot="dropdown">
               <!--
               <el-dropdown-item command="userinfo">个人中心</el-dropdown-item>
-              <el-dropdown-item command="setting">设置</el-dropdown-item>
               -->
+              <el-dropdown-item command="password">修改密码</el-dropdown-item>
               <el-dropdown-item command="logout">注销登录</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -45,6 +45,24 @@
         </el-main>
       </el-container>
     </el-container>
+    <el-dialog
+      width="30%"
+      title="修改密码"
+      :visible.sync="dialogVisible"
+      :before-close="cancel">
+      <el-form :model="password" label-position="right" label-width="90px">
+        <el-form-item label="旧密码" prop="oldPassword">
+          <el-input v-model="password.oldPassword" type="password" placeholder="请输入旧密码" />
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input v-model="password.newPassword" type="password" placeholder="请输入新密码" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="changePassword">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -53,7 +71,12 @@ export default {
   name: 'Home',
   data () {
     return {
-      user: JSON.parse(window.sessionStorage.getItem('user'))
+      user: JSON.parse(window.sessionStorage.getItem('user')),
+      dialogVisible: false,
+      password: {
+        oldPassword: '',
+        newPassword: ''
+      }
     }
   },
   computed: {
@@ -79,6 +102,26 @@ export default {
             message: '已取消操作'
           })
         })
+      } else if (cmd === 'password') {
+        // 修改密码
+        this.dialogVisible = true
+      }
+    },
+    changePassword () {
+      this.putRequest('/user/' + this.user.id + '/password', this.password).then(resp => {
+        if (resp) {
+          this.getRequest('/logout')
+          window.sessionStorage.removeItem('user')
+          this.$store.commit('INIT_ROUTES', [])
+          this.$router.replace('/')
+        }
+      })
+    },
+    cancel () {
+      this.dialogVisible = false
+      this.password = {
+        oldPassword: '',
+        newPassword: ''
       }
     }
   }

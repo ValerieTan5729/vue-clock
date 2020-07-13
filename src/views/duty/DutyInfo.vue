@@ -306,6 +306,7 @@ export default {
     },
     search () {
       this.searchValue.search = true
+      this.page = 1
       this.initDuty()
     },
     reset () {
@@ -319,6 +320,7 @@ export default {
         prop: 'beginDate',
         order: 'descending'
       }
+      this.page = 1
       this.initDuty()
     },
     handleAdd () {

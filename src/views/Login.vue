@@ -30,9 +30,13 @@ export default {
   data () {
     return {
       loading: false,
+      // loginForm: {
+      //   phone: '15692009328',
+      //   password: '123456'
+      // },
       loginForm: {
-        phone: '15692009328',
-        password: '123456'
+        phone: null,
+        password: null
       },
       checked: true,
       rules: {

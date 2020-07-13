@@ -5,10 +5,17 @@ import router from '../router'
 axios.interceptors.response.use(success => {
   if (success.status && success.status === 200 && success.data.status === 500) {
     Message.error({ message: success.data.msg })
+    /*
+    MessageBox.alert(success.data.msg, '错误信息', {
+      confirmButtonText: '确定'
+    }).then(r => {
+      console.log('告知用户错误信息:' + success.data.msg)
+    })
+    */
     return
   }
   if (success.data.msg) {
-    Message.success({ message: success.data.msg })
+    Message.success({ message: success.data.msg, duration: 1500 })
   }
   return success.data
 }, error => {
@@ -22,6 +29,13 @@ axios.interceptors.response.use(success => {
   } else {
     if (error.response.data.msg) {
       Message.error({ message: error.response.data.msg })
+      /*
+      MessageBox.alert(error.response.data.msg, '错误信息', {
+        confirmButtonText: '确定'
+      }).then(r => {
+        console.log('告知用户错误信息:' + error.response.data.msg)
+      })
+      */
     } else {
       Message.error({ message: '未知错误!' })
     }

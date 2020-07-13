@@ -5,34 +5,34 @@
       <el-divider content-position="left" style="font-size: 20px">查询条件</el-divider>
       <el-form :model="searchValue" ref="searchForm" label-position="right" label-width="90px" style="width: 90%;" :inline="true">
         <el-row>
-            <el-form-item label="用户名称" prop="name">
-              <el-input v-model="searchValue.name" class="formInput"/>
-            </el-form-item>
-            <el-form-item label="手机号码" prop="phone">
-              <el-input v-model="searchValue.phone" class="formInput"/>
-            </el-form-item>
-            <el-form-item label="所在部门" prop="depId">
-              <el-cascader
-                class="formInput"
-                placeholder="请选择所在部门"
-                v-model="searchValue.depId"
-                :options="depList"
-                :show-all-levels="false"
-                :props="{ label: 'name', value: 'id', checkStrictly: true }"
-                filterable>
-              </el-cascader>
-            </el-form-item>
-            <el-form-item label="值班级别" prop="levelId">
-              <el-cascader
-                placeholder="请选择值班级别"
-                class="formInput"
-                v-model="searchValue.levelId"
-                :options="dutyLevelList"
-                :show-all-levels="false"
-                :props="{ label: 'name', value: 'id', expandTrigger:'hover' }"
-                filterable>
-              </el-cascader>
-            </el-form-item>
+          <el-form-item label="用户名称" prop="name">
+            <el-input v-model="searchValue.name" class="formInput"/>
+          </el-form-item>
+          <el-form-item label="手机号码" prop="phone">
+            <el-input v-model="searchValue.phone" class="formInput"/>
+          </el-form-item>
+          <el-form-item label="所在部门" prop="depId">
+            <el-cascader
+              class="formInput"
+              placeholder="请选择所在部门"
+              v-model="searchValue.depId"
+              :options="depList"
+              :show-all-levels="false"
+              :props="{ label: 'name', value: 'id', checkStrictly: true }"
+              filterable>
+            </el-cascader>
+          </el-form-item>
+          <el-form-item label="值班级别" prop="levelId">
+            <el-cascader
+              placeholder="请选择值班级别"
+              class="formInput"
+              v-model="searchValue.levelId"
+              :options="dutyLevelList"
+              :show-all-levels="false"
+              :props="{ label: 'name', value: 'id', expandTrigger:'hover' }"
+              filterable>
+            </el-cascader>
+          </el-form-item>
         </el-row>
         <el-row style="text-align: center">
           <el-form-item>
@@ -409,6 +409,7 @@ export default {
     search () {
       this.searchValue.search = true
       console.log(this.searchValue)
+      this.page = 1
       this.initUser()
     },
     reset () {
@@ -420,6 +421,7 @@ export default {
         depId: null,
         levelId: null
       }
+      this.page = 1
       this.initUser()
     },
     handleSelectionChange (val) {
@@ -468,7 +470,7 @@ export default {
     handleDelete (index, row) {
       console.log('handle delete')
       console.log(index, row)
-      if (index && row) {
+      if (index !== undefined && row !== undefined) {
         console.log('行内按钮的删除按钮被点击')
         this.$confirm('此操作将永久删除用户【' + row.name + '】, 是否继续?', '提示', {
           confirmButtonText: '确定',

@@ -13,10 +13,15 @@
             <LazySelect :url="'/duty/'" :label="'name'" v-model="searchValue.dutyId" class="formInput"/>
           </el-form-item>
           <el-form-item label="值班地点" prop="place">
-            <!-- 暂无确定值班地点存什么, 所以暂定 -->
-            <el-select v-model="searchValue.place" disabled class="formInput">
-              <option value="1">值班地点一</option>
-            </el-select>
+            <el-cascader
+              placeholder="请选择值班地点"
+              class="formInput"
+              v-model="searchValue.place"
+              :options="dutyPlace"
+              :show-all-levels="false"
+              :props="{ label: 'name', value: 'id', expandTrigger:'hover' }"
+              filterable>
+            </el-cascader>
           </el-form-item>
         </el-row>
         <el-row>
@@ -37,6 +42,17 @@
               placeholder="选择结束日期"
               class="formInput">
             </el-date-picker>
+          </el-form-item>
+          <el-form-item label="值班级别" prop="level">
+            <el-cascader
+              placeholder="请选择值班级别"
+              class="formInput"
+              v-model="searchValue.level"
+              :options="dutyLevelList"
+              :show-all-levels="false"
+              :props="{ label: 'name', value: 'id', expandTrigger:'hover' }"
+              filterable>
+            </el-cascader>
           </el-form-item>
         </el-row>
         <el-row style="text-align: center">
@@ -77,13 +93,18 @@
           min-width="125"
           align="center"/>
         <el-table-column
+          prop="levelName"
+          label="值班级别"
+          min-width="125"
+          align="center"/>
+        <el-table-column
           prop="date"
           label="打卡时间"
           sortable
           width="150"
           align="center"/>
         <el-table-column
-          prop="place"
+          prop="placeName"
           label="值班地点"
           min-width="150"
           align="center"/>
@@ -161,16 +182,21 @@ export default {
         beginDate: null,
         endDate: null,
         place: null,
+        level: null,
         search: false
       },
       loading: false,
       imgPath: '/mini/record/img/?path=',
       dutyPath: '/duty/?',
-      userPath: '/user/?'
+      userPath: '/user/?',
+      dutyPlace: [],
+      dutyLevelList: []
     }
   },
   mounted () {
     this.initRecord()
+    this.initDutyPlace()
+    this.initDutyLevel()
   },
   methods: {
     initRecord () {
@@ -197,7 +223,10 @@ export default {
           url += '&endDate=' + this.searchValue.endDate
         }
         if (this.searchValue.place) {
-          url += '&place=' + this.searchValue.place
+          url += '&place=' + this.searchValue.place[this.searchValue.place.length - 1]
+        }
+        if (this.searchValue.level) {
+          url += '&level=' + this.searchValue.level[this.searchValue.level.length - 1]
         }
       }
       if (this.orderValue.prop && this.orderValue.order) {
@@ -210,6 +239,28 @@ export default {
           this.total = resp.obj.total
           console.log(this.record)
           this.loading = false
+        }
+      })
+    },
+    initDutyPlace () {
+      this.getRequest('/basic/dic/place').then(resp => {
+        if (resp) {
+          console.log('值班地点列表')
+          console.log(resp.obj)
+          this.dutyPlace = this.getTreeData(resp.obj)
+          console.log('值班地点列表(处理后)')
+          console.log(this.dutyPlace)
+        }
+      })
+    },
+    initDutyLevel () {
+      this.getRequest('/basic/dic/duty').then(resp => {
+        if (resp) {
+          console.log('值班级别列表')
+          console.log(resp.obj)
+          this.dutyLevelList = this.getTreeData(resp.obj)
+          console.log('值班级别列表')
+          console.log(this.dutyLevelList)
         }
       })
     },
@@ -250,6 +301,7 @@ export default {
     },
     search () {
       this.searchValue.search = true
+      this.page = 1
       this.initRecord()
     },
     reset () {
@@ -259,9 +311,24 @@ export default {
         beginDate: null,
         endDate: null,
         place: null,
+        level: null,
         search: false
       }
+      this.page = 1
       this.initRecord()
+    },
+    getTreeData (list) {
+      // 获取符合cascader的value
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].children.length === 0) {
+          list[i].children = undefined
+          list[i].hasChildren = false
+        } else {
+          list[i].hasChildren = true
+          this.getTreeData(list[i].children)
+        }
+      }
+      return list
     }
   }
 }
